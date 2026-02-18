@@ -162,67 +162,70 @@
                                 class="px-6 py-4 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold border border-white/5 transition-all">
                                 Version History
                             </button>
-                            <!-- Dropdown -->
+                            <!-- Dropdown with hover bridge -->
                             <div
-                                class="absolute bottom-full left-0 mb-4 w-60 bg-[#1e293b] border border-white/10 rounded-2xl shadow-2xl p-2 hidden group-hover/versions:block backdrop-blur-xl">
-                                <a href="ai-suggestions/v5/index.html"
-                                    class="block w-full text-left px-4 py-3 hover:bg-white/5 rounded-xl transition-colors">
-                                    <span class="text-xs font-bold text-indigo-400 block">v5</span>
-                                    <span class="text-[10px] text-slate-500">Stability & UI refinement</span>
-                                </a>
-                                <a href="ai-suggestions/v4/index.html"
-                                    class="block w-full text-left px-4 py-3 hover:bg-white/5 rounded-xl transition-colors">
-                                    <span class="text-xs font-bold text-indigo-400 block">v4</span>
-                                    <span class="text-[10px] text-slate-500">Fullscreen Focus Mode</span>
-                                </a>
-                                <a href="ai-suggestions/v3/index.html"
-                                    class="block w-full text-left px-4 py-3 hover:bg-white/5 rounded-xl transition-colors">
-                                    <span class="text-xs font-bold text-indigo-400 block">v3</span>
-                                    <span class="text-[10px] text-slate-500">Sidebar Navigation</span>
-                                </a>
+                                class="absolute bottom-full left-0 pb-4 w-60 hidden group-hover/versions:block z-50 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
+                                <div
+                                    class="bg-[#1e293b] border border-white/10 rounded-2xl shadow-2xl p-2 backdrop-blur-xl">
+                                    <a href="ai-suggestions/v5/index.html"
+                                        class="block w-full text-left px-4 py-3 hover:bg-white/5 rounded-xl transition-colors">
+                                        <span class="text-xs font-bold text-indigo-400 block">v5</span>
+                                        <span class="text-[10px] text-slate-500">Stability & UI refinement</span>
+                                    </a>
+                                    <a href="ai-suggestions/v4/index.html"
+                                        class="block w-full text-left px-4 py-3 hover:bg-white/5 rounded-xl transition-colors">
+                                        <span class="text-xs font-bold text-indigo-400 block">v4</span>
+                                        <span class="text-[10px] text-slate-500">Fullscreen Focus Mode</span>
+                                    </a>
+                                    <a href="ai-suggestions/v3/index.html"
+                                        class="block w-full text-left px-4 py-3 hover:bg-white/5 rounded-xl transition-colors">
+                                        <span class="text-xs font-bold text-indigo-400 block">v3</span>
+                                        <span class="text-[10px] text-slate-500">Sidebar Navigation</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <!-- Visual Element -->
+                    <div
+                        class="w-full md:w-48 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 rounded-2xl flex items-center justify-center border border-white/5">
+                        <i data-lucide="sparkles" class="w-16 h-16 text-indigo-400/50"></i>
+                    </div>
                 </div>
-                <!-- Visual Element -->
+
+                <!-- Future Project Placeholder -->
                 <div
-                    class="w-full md:w-48 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 rounded-2xl flex items-center justify-center border border-white/5">
-                    <i data-lucide="sparkles" class="w-16 h-16 text-indigo-400/50"></i>
+                    class="glass-card rounded-[32px] p-10 flex flex-col justify-center items-center text-center border-dashed border-white/10 border-2 bg-transparent hover:bg-white/[0.02]">
+                    <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-6">
+                        <i data-lucide="plus" class="w-8 h-8 text-slate-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-500 mb-2">Next Prototype</h3>
+                    <p class="text-slate-600 text-sm max-w-xs">Reserved for the next breakthrough in experimentation
+                        design.
+                    </p>
                 </div>
+
             </div>
 
-            <!-- Future Project Placeholder -->
-            <div
-                class="glass-card rounded-[32px] p-10 flex flex-col justify-center items-center text-center border-dashed border-white/10 border-2 bg-transparent hover:bg-white/[0.02]">
-                <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-6">
-                    <i data-lucide="plus" class="w-8 h-8 text-slate-600"></i>
+            <!-- System Stats / Footer -->
+            <footer
+                class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 opacity-0 animate-[fadeIn_1.4s_ease-out_forwards]">
+                <div class="flex gap-12">
+                    <div>
+                        <span
+                            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Architecture</span>
+                        <span class="text-sm font-medium text-slate-300">Nuxt + Tailwind</span>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Last
+                            Update</span>
+                        <span class="text-sm font-medium text-slate-300">Feb 2026</span>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-slate-500 mb-2">Next Prototype</h3>
-                <p class="text-slate-600 text-sm max-w-xs">Reserved for the next breakthrough in experimentation design.
+                <p class="text-[10px] text-slate-600 font-mono italic">
+                    &copy; Antigravity Systems. Internal Use Only.
                 </p>
-            </div>
-
-        </div>
-
-        <!-- System Stats / Footer -->
-        <footer
-            class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 opacity-0 animate-[fadeIn_1.4s_ease-out_forwards]">
-            <div class="flex gap-12">
-                <div>
-                    <span
-                        class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Architecture</span>
-                    <span class="text-sm font-medium text-slate-300">Nuxt + Tailwind</span>
-                </div>
-                <div>
-                    <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Last
-                        Update</span>
-                    <span class="text-sm font-medium text-slate-300">Feb 2026</span>
-                </div>
-            </div>
-            <p class="text-[10px] text-slate-600 font-mono italic">
-                &copy; Antigravity Systems. Internal Use Only.
-            </p>
-        </footer>
+            </footer>
     </main>
 
     <script>
