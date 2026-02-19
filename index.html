@@ -134,10 +134,10 @@
         <!-- Prototypes Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-24 opacity-0 animate-[fadeIn_1.2s_ease-out_forwards]">
 
-            <!-- Featured: AI Suggestions (Test Ideas) -->
-            <div class="glass-card rounded-[32px] p-10 group relative flex flex-col md:flex-row gap-10">
-                <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-6">
+            <!-- Prototype 1: AI Suggestions -->
+            <div class="glass-card rounded-[40px] p-10 group relative flex flex-col justify-between h-full group">
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-8">
                         <span
                             class="px-3 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold uppercase tracking-widest rounded-full border border-indigo-500/20">Active
                             Prototype</span>
@@ -145,14 +145,18 @@
                             class="px-3 py-1 bg-white/5 text-white/40 text-[10px] font-bold uppercase tracking-widest rounded-full">Lot
                             2</span>
                     </div>
-                    <h2 class="text-3xl font-bold mb-4 group-hover:text-indigo-300 transition-colors">AI Suggestions
-                        Dashboard</h2>
-                    <p class="text-slate-400 text-sm leading-relaxed mb-8">
+
+                    <h2
+                        class="text-4xl font-extrabold mb-6 group-hover:text-indigo-300 transition-colors tracking-tight">
+                        AI Suggestions <br> Dashboard
+                    </h2>
+
+                    <p class="text-slate-400 text-sm leading-relaxed mb-10 max-w-sm">
                         Our flagship experiment in AI-driven ideation. Automatically identifies revenue opportunities
                         through page analysis and historical performance patterns.
                     </p>
 
-                    <div class="flex flex-wrap gap-4 mt-auto">
+                    <div class="flex flex-wrap gap-4">
                         <a href="ai-suggestions/v6/index.html"
                             class="glow-button bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-3">
                             Open Prototype <i data-lucide="external-link" class="w-4 h-4"></i>
@@ -162,11 +166,10 @@
                                 class="px-6 py-4 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold border border-white/5 transition-all">
                                 Version History
                             </button>
-                            <!-- Dropdown with hover bridge -->
                             <div
                                 class="absolute bottom-full left-0 pb-4 w-60 hidden group-hover/versions:block z-50 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
                                 <div
-                                    class="bg-[#1e293b] border border-white/10 rounded-2xl shadow-2xl p-2 backdrop-blur-xl">
+                                    class="bg-[#1e293b]/95 border border-white/10 rounded-2xl shadow-2xl p-2 backdrop-blur-xl">
                                     <a href="ai-suggestions/v5/index.html"
                                         class="block w-full text-left px-4 py-3 hover:bg-white/5 rounded-xl transition-colors">
                                         <span class="text-xs font-bold text-indigo-400 block">v5</span>
@@ -186,46 +189,57 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Visual Element -->
-                    <div
-                        class="w-full md:w-48 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 rounded-2xl flex items-center justify-center border border-white/5">
-                        <i data-lucide="sparkles" class="w-16 h-16 text-indigo-400/50"></i>
-                    </div>
                 </div>
 
-                <!-- Future Project Placeholder -->
-                <div
-                    class="glass-card rounded-[32px] p-10 flex flex-col justify-center items-center text-center border-dashed border-white/10 border-2 bg-transparent hover:bg-white/[0.02]">
-                    <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-6">
-                        <i data-lucide="plus" class="w-8 h-8 text-slate-600"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-500 mb-2">Next Prototype</h3>
-                    <p class="text-slate-600 text-sm max-w-xs">Reserved for the next breakthrough in experimentation
-                        design.
-                    </p>
+                <!-- Abstract Visual Background Element -->
+                <div class="absolute top-0 right-0 p-10 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <i data-lucide="sparkles"
+                        class="w-32 h-32 text-indigo-400 -rotate-12 translate-x-8 -translate-y-8"></i>
                 </div>
-
             </div>
 
-            <!-- System Stats / Footer -->
-            <footer
-                class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 opacity-0 animate-[fadeIn_1.4s_ease-out_forwards]">
-                <div class="flex gap-12">
-                    <div>
-                        <span
-                            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Architecture</span>
-                        <span class="text-sm font-medium text-slate-300">Nuxt + Tailwind</span>
-                    </div>
-                    <div>
-                        <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Last
-                            Update</span>
-                        <span class="text-sm font-medium text-slate-300">Feb 2026</span>
-                    </div>
+            <!-- Prototype 2: Future Slot -->
+            <div
+                class="glass-card rounded-[40px] p-10 flex flex-col justify-center items-center text-center border-dashed border-white/10 border-2 bg-transparent hover:bg-white/[0.02] h-full transition-all group">
+                <div
+                    class="w-20 h-20 bg-white/5 rounded-[24px] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
+                    <i data-lucide="plus"
+                        class="w-10 h-10 text-slate-600 group-hover:text-indigo-400 transition-colors"></i>
                 </div>
-                <p class="text-[10px] text-slate-600 font-mono italic">
-                    &copy; Antigravity Systems. Internal Use Only.
+                <h3
+                    class="text-2xl font-extrabold text-slate-500 mb-4 tracking-tight group-hover:text-slate-400 transition-colors">
+                    Next Insight</h3>
+                <p
+                    class="text-slate-600 text-sm max-w-[240px] leading-relaxed group-hover:text-slate-500 transition-colors">
+                    Reserved for the next breakthrough in behavioral experimentation design.
                 </p>
-            </footer>
+                <div
+                    class="mt-10 px-6 py-2 rounded-full border border-white/5 bg-white/5 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">
+                    Coming Soon
+                </div>
+            </div>
+
+        </div>
+
+        <!-- System Stats / Footer -->
+        <footer
+            class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 opacity-0 animate-[fadeIn_1.4s_ease-out_forwards]">
+            <div class="flex gap-12">
+                <div>
+                    <span
+                        class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Architecture</span>
+                    <span class="text-sm font-medium text-slate-300">Nuxt + Tailwind</span>
+                </div>
+                <div>
+                    <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Last
+                        Update</span>
+                    <span class="text-sm font-medium text-slate-300">Feb 2026</span>
+                </div>
+            </div>
+            <p class="text-[10px] text-slate-600 font-mono italic">
+                &copy; Antigravity Systems. Internal Use Only.
+            </p>
+        </footer>
     </main>
 
     <script>
