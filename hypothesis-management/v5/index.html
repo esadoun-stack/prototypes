@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kameleoon | Scientific Experimentation OS (v5)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F9FB;
+            color: #1E293B;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #FFFFFF;
+            border-right: 1px solid #E2E8F0;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748B;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #F1F5F9;
+            color: #1E293B;
+        }
+
+        .nav-item.active {
+            background: #EEF2FF;
+            color: #4F46E5;
+        }
+
+        .card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .badge-pbx {
+            background: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #FDE68A;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .tooltip {
+            position: fixed;
+            z-index: 1000;
+            width: 400px;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            pointer-events: none;
+            display: none;
+        }
+
+        .slash-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            width: 220px;
+            z-index: 50;
+            display: none;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.2s ease-out forwards;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+
+        .criteria-pill {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid #E2E8F0;
+            background: #F8F9FB;
+        }
+
+        .score-bar {
+            height: 4px;
+            border-radius: 2px;
+            background: #E2E8F0;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: #4F46E5;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Global Tooltip -->
+    <div id="global-tooltip" class="tooltip animate-slide-in">
+        <div class="flex items-center gap-2 mb-4">
+            <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                <i data-lucide="sparkles" class="w-5 h-5"></i>
+            </div>
+            <h3 id="tt-name" class="font-bold text-slate-900 text-lg">Test Name</h3>
+        </div>
+        <div class="space-y-4">
+            <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Scientific
+                    Hypothesis</span>
+                <p id="tt-hypothesis" class="text-sm italic font-medium text-slate-700 leading-relaxed">Hypothesis text
+                    goes here...</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4 text-[11px]">
+                <div>
+                    <span class="block text-slate-400 font-bold uppercase mb-1">Population</span>
+                    <span class="block font-semibold text-slate-900">VIP / Segment A</span>
+                </div>
+                <div>
+                    <span class="block text-slate-400 font-bold uppercase mb-1">Main Goal</span>
+                    <span class="block font-semibold text-slate-900">Purchase Rate</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar p-6 flex flex-col">
+        <div class="flex items-center gap-3 mb-10 px-2">
+            <div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
+                <i data-lucide="layers" class="text-white w-5 h-5"></i>
+            </div>
+            <span class="font-extrabold text-xl tracking-tighter">Kameleoon</span>
+        </div>
+
+        <nav class="space-y-1 flex-1">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 px-2">Core Platform</div>
+            <div onclick="switchView('dashboard')" id="nav-dashboard" class="nav-item active">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+            </div>
+            <div onclick="switchView('finalization')" id="nav-finalization" class="nav-item">
+                <i data-lucide="check-square" class="w-4 h-4"></i> Finalization Flow
+            </div>
+
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-8 mb-4 px-2">Scientific OS
+            </div>
+            <div onclick="switchView('hypothesis')" id="nav-hypothesis" class="nav-item">
+                <i data-lucide="kanban" class="w-4 h-4"></i> Hypothesis Management
+            </div>
+            <div onclick="switchView('backoffice')" id="nav-backoffice" class="nav-item">
+                <i data-lucide="settings" class="w-4 h-4"></i> Back-Office
+            </div>
+        </nav>
+
+        <div class="mt-auto px-2 pt-6 border-t border-slate-100">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-xs font-bold text-indigo-700">
+                    ES</div>
+                <div class="flex-1">
+                    <div class="text-[11px] font-bold text-slate-900">Erwan Sadoun</div>
+                    <div class="text-[9px] text-slate-400">Project Lead</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="h-16 px-10 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+            <div id="breadcrumb" class="text-xs font-semibold text-slate-400 flex items-center gap-2">
+                Experiments <i data-lucide="chevron-right" class="w-3 h-3"></i> <span class="text-slate-900"
+                    id="current-view-name">Dashboard</span>
+            </div>
+            <div class="flex items-center gap-6">
+                <div
+                    class="flex items-center gap-2 text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full">
+                    <i data-lucide="zap" class="w-3.5 h-3.5"></i> KAI Active
+                </div>
+                <i data-lucide="bell" class="w-5 h-5 text-slate-400"></i>
+            </div>
+        </header>
+
+        <div id="view-container" class="flex-1 overflow-y-auto p-10 custom-scrollbar">
+            <!-- Content will be injected here -->
+        </div>
+    </main>
+
+    <script>
+        const state = {
+            isAdmin: false,
+            activeView: 'dashboard',
+            finalizationVariant: 'standard',
+            hypothesisSubView: 'kanban' // 'kanban' or 'list'
+        };
+
+        const DATA = {
+            experiments: [
+                { id: 1, name: 'Test PBX 1', type: 'Prompt-based', status: 'Draft', hypothesis: 'If we Target VIPs, then Purchase Rate will increase because of Social Proof.' },
+                { id: 2, name: 'Search Bar Optimization', type: 'Code A/B', status: 'Online', hypothesis: 'If we provide real-time suggestions, then search bounce rate will decrease because conversion intent is captured earlier.' },
+                { id: 3, name: 'Mobile Bottom Nav', type: 'Editor', status: 'Paused', hypothesis: 'If we switch to a thumb-friendly bottom nav, then average session depth will increase because navigation is physically easier.' }
+            ],
+            hypotheses: [
+                { id: 101, title: 'VIP Specialized Checkout', tags: ['Checkout', 'VIP'], source: 'PBX Ideate', status: 'Backlog', impact: 9, confidence: 8, effort: 2, score: 85 },
+                { id: 102, title: 'Value Prop Clarity', tags: ['Homepage'], source: 'Manual', status: 'Ready', impact: 6, confidence: 9, effort: 1, score: 78 },
+                { id: 103, title: 'Sizing Guide v2', tags: ['PDP'], source: 'PBX Ideate', status: 'Testing', impact: 7, confidence: 7, effort: 4, score: 65 },
+                { id: 104, title: 'One-Click Reorder', tags: ['Account'], source: 'Manual', status: 'Backlog', impact: 8, confidence: 6, effort: 3, score: 72 }
+            ]
+        };
+
+        const VIEWS = {
+            dashboard: () => `
+                <div class="animate-slide-in">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Dashboard</h1>
+                            <p class="text-sm text-slate-500">Overview of your active and draft experiments</p>
+                        </div>
+                        <button class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-indigo-100 flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i> New Experiment
+                        </button>
+                    </div>
+
+                    <div class="card overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 border-b border-slate-100">
+                                <tr>
+                                    <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">Name</th>
+                                    <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">Type</th>
+                                    <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">Status</th>
+                                    <th class="px-6 py-4 text-right pr-6"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                ${DATA.experiments.map(exp => `
+                                    <tr class="hover:bg-slate-50 transition-colors group">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-2 h-2 rounded-full ${exp.status === 'Online' ? 'bg-emerald-500' : 'bg-slate-300'}"></div>
+                                                <span class="font-bold text-slate-700">${exp.name}</span>
+                                                <i data-lucide="info" 
+                                                   onmouseover="showTooltip(event, '${exp.name}', '${exp.hypothesis}')" 
+                                                   onmouseout="hideTooltip()"
+                                                   class="w-4 h-4 text-slate-300 hover:text-indigo-600 cursor-help transition-colors"></i>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-slate-500">${exp.type}</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase ${exp.status === 'Online' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}">${exp.status}</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right pr-6">
+                                            <i data-lucide="more-horizontal" class="w-5 h-5 text-slate-300"></i>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `,
+            finalization: () => `
+                <div class="animate-slide-in space-y-8 max-w-4xl mx-auto">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Finalization Flow</h1>
+                            <p class="text-sm text-slate-500">Main Information & Scientific Hypothesis</p>
+                        </div>
+                        <div class="flex bg-slate-100 p-1 rounded-xl">
+                            <button onclick="switchFinalization('standard')" class="px-4 py-1.5 text-xs font-bold rounded-lg ${state.finalizationVariant === 'standard' ? 'bg-white shadow-sm' : 'text-slate-500'}">Standard</button>
+                            <button onclick="switchFinalization('pico')" class="px-4 py-1.5 text-xs font-bold rounded-lg ${state.finalizationVariant === 'pico' ? 'bg-white shadow-sm' : 'text-slate-500'}">PICO Framework</button>
+                        </div>
+                    </div>
+
+                    <div class="card p-8 space-y-8">
+                        <div class="space-y-6">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                                    </div>
+                                    <h2 class="text-lg font-extrabold text-slate-900 uppercase tracking-tight">Experiment Hypothesis</h2>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="text-right">
+                                        <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Quality Score</span>
+                                        <span class="text-lg font-black text-emerald-500">88/100</span>
+                                    </div>
+                                    <div class="w-10 h-10 rounded-full border-2 border-slate-100 flex items-center justify-center relative">
+                                        <div class="absolute inset-0 border-t-2 border-emerald-500 rounded-full animate-spin"></div>
+                                        <i data-lucide="check" class="w-4 h-4 text-emerald-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            ${state.finalizationVariant === 'standard' ? `
+                                <div class="relative">
+                                    <textarea id="hyp-input" onkeyup="handleSlash(event)" class="w-full h-40 bg-slate-50 border border-slate-100 rounded-2xl p-6 text-slate-700 italic font-medium focus:outline-none focus:ring-2 focus:ring-indigo-100 transition-all resize-none" placeholder="If we [Change], then [Outcome] because [Reasoning]..."></textarea>
+                                    <div id="slash-menu" class="slash-menu absolute top-full left-6 mt-2">
+                                        <div class="p-2 border-b border-slate-50 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest">Select Context</div>
+                                        <div class="p-1">
+                                            <div class="px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer transition-colors"><i data-lucide="target" class="w-3.5 h-3.5"></i> Add Goal [Purchase Rate]</div>
+                                            <div class="px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer transition-colors"><i data-lucide="users" class="w-3.5 h-3.5"></i> Add Segment [VIP Users]</div>
+                                            <div class="px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer transition-colors"><i data-lucide="layout" class="w-3.5 h-3.5"></i> Targeted Page [Checkout]</div>
+                                        </div>
+                                    </div>
+                                    <div class="absolute bottom-6 right-6 flex items-center gap-2 animate-pulse text-indigo-600 text-xs font-bold uppercase tracking-tight">
+                                        <i data-lucide="brain-circuit" class="w-4 h-4"></i> KAI is analyzing...
+                                    </div>
+                                </div>
+                            ` : `
+                                <div class="grid gap-4">
+                                    ${['Population', 'Intervention', 'Comparison', 'Outcome'].map(tag => `
+                                        <div class="flex items-center gap-4 bg-slate-50 border border-slate-100 p-4 rounded-xl group hover:border-indigo-200 transition-all">
+                                            <div class="w-10 h-10 flex-shrink-0 bg-white border border-slate-200 rounded-lg flex items-center justify-center font-black text-indigo-600 shadow-sm">${tag[0]}</div>
+                                            <div class="flex-1">
+                                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">${tag}</label>
+                                                <input type="text" placeholder="Specify ${tag.toLowerCase()}..." class="w-full bg-transparent border-none text-sm font-semibold text-slate-700 focus:outline-none" />
+                                            </div>
+                                            <i data-lucide="help-circle" class="w-4 h-4 text-slate-300"></i>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            `}
+                        </div>
+                        <div class="pt-8 border-t border-slate-100 opacity-40">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i data-lucide="clock" class="w-4 h-4"></i></div>
+                                <h3 class="font-bold text-slate-900 uppercase tracking-tight">Scheduling & Traffic</h3>
+                            </div>
+                            <div class="h-20 bg-slate-50 rounded-xl border border-dashed border-slate-200"></div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            hypothesis: () => `
+                <div class="animate-slide-in space-y-8">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Hypothesis Management</h1>
+                            <p class="text-sm text-slate-500">Mapping the intent and roadmap of your account</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="flex bg-slate-100 p-1 rounded-xl mr-4">
+                                <button onclick="switchHypothesisSubView('kanban')" class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded-lg ${state.hypothesisSubView === 'kanban' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500'}">
+                                    <i data-lucide="kanban" class="w-3.5 h-3.5"></i> Kanban
+                                </button>
+                                <button onclick="switchHypothesisSubView('list')" class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded-lg ${state.hypothesisSubView === 'list' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500'}">
+                                    <i data-lucide="list" class="w-3.5 h-3.5"></i> List & Criteria
+                                </button>
+                            </div>
+                            <button onclick="toggleAdmin()" class="px-4 py-2 text-xs font-bold rounded-xl border border-slate-200 ${state.isAdmin ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-500'} transition-all">
+                                <i data-lucide="${state.isAdmin ? 'unlock' : 'lock'}" class="w-3.5 h-3.5 inline mr-2 -mt-0.5"></i> Admin Mode
+                            </button>
+                        </div>
+                    </div>
+
+                    ${state.isAdmin ? `
+                        <div class="card p-8 border-indigo-200 bg-indigo-50/20 animate-slide-in">
+                            <div class="flex justify-between items-start mb-6">
+                                <h3 class="text-sm font-black text-indigo-700 uppercase tracking-widest">Master Prompt Configuration</h3>
+                            </div>
+                            <textarea class="w-full h-24 bg-white border border-indigo-100 rounded-xl p-4 text-xs font-mono text-indigo-900 leading-relaxed shadow-inner focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all">Prioritize the PICO framework. Ensure all user interventions have a clear behavioral 'Because' statement.</textarea>
+                        </div>
+                    ` : ''}
+
+                    ${state.hypothesisSubView === 'kanban' ? `
+                        <div class="flex gap-6 overflow-x-auto pb-6 custom-scrollbar">
+                            ${['Backlog', 'Ready', 'Testing', 'Completed'].map(col => `
+                                <div class="w-80 shrink-0 space-y-4">
+                                    <div class="flex items-center justify-between px-2">
+                                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">${col}</span>
+                                        <i data-lucide="more-vertical" class="w-4 h-4 text-slate-300"></i>
+                                    </div>
+                                    <div class="space-y-4">
+                                        ${DATA.hypotheses.filter(h => h.status === col).map(h => `
+                                            <div class="card p-5 space-y-4 hover:border-indigo-300 hover:shadow-md transition-all cursor-grab active:cursor-grabbing">
+                                                <div class="flex justify-between items-start">
+                                                    <div class="flex gap-1 flex-wrap">
+                                                        ${h.tags.map(t => `<span class="px-1.5 py-0.5 bg-slate-100 text-slate-500 text-[8px] font-black uppercase rounded">${t}</span>`).join('')}
+                                                    </div>
+                                                    ${h.source === 'PBX Ideate' ? `<span class="badge-pbx"><i data-lucide="sparkles" class="w-2.5 h-2.5 inline mr-1 -mt-0.5"></i> IDEATE</span>` : ''}
+                                                </div>
+                                                <h4 class="font-bold text-slate-900 leading-tight text-sm">${h.title}</h4>
+                                                <div class="flex justify-between items-center text-[10px] font-black text-slate-400">
+                                                    <div class="flex items-center gap-1"><i data-lucide="target" class="w-3 h-3 text-indigo-500"></i> Score: ${h.score}</div>
+                                                    <div class="flex -space-x-1.5">
+                                                        <div class="w-5 h-5 rounded-full bg-indigo-100 border border-white"></div>
+                                                        <div class="w-5 h-5 rounded-full bg-emerald-100 border border-white"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                        <button class="w-full py-4 border-2 border-dashed border-slate-100 rounded-2xl text-slate-400 hover:text-slate-600 hover:border-slate-200 transition-all text-[10px] font-black uppercase tracking-widest">+ New Idea</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : `
+                        <div class="card overflow-hidden animate-slide-in">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-100">
+                                    <tr>
+                                        <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-500 tracking-widest">Hypothesis</th>
+                                        <th class="px-3 py-4 text-[10px] font-black uppercase text-slate-500 tracking-widest text-center italic">Impact</th>
+                                        <th class="px-3 py-4 text-[10px] font-black uppercase text-slate-500 tracking-widest text-center italic">Confidence</th>
+                                        <th class="px-3 py-4 text-[10px] font-black uppercase text-slate-500 tracking-widest text-center italic">Ease</th>
+                                        <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-500 tracking-widest">Global Score</th>
+                                        <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-500 tracking-widest">Institutional Rigor</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${DATA.hypotheses.map(h => `
+                                        <tr class="hover:bg-slate-50 transition-colors group">
+                                            <td class="px-6 py-6 border-r border-slate-50">
+                                                <div class="flex items-center gap-3">
+                                                    ${h.source === 'PBX Ideate' ? `<i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>` : `<i data-lucide="file-text" class="w-4 h-4 text-slate-300"></i>`}
+                                                    <div>
+                                                        <div class="font-bold text-slate-900">${h.title}</div>
+                                                        <div class="flex gap-2 mt-1">
+                                                            ${h.tags.map(t => `<span class="text-[8px] font-black uppercase text-slate-400">#${t}</span>`).join('')}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-3 py-6 text-center"><div class="criteria-pill">${h.impact}/10</div></td>
+                                            <td class="px-3 py-6 text-center"><div class="criteria-pill">${h.confidence}/10</div></td>
+                                            <td class="px-3 py-6 text-center"><div class="criteria-pill">${10 - h.effort}/10</div></td>
+                                            <td class="px-6 py-6">
+                                                <div class="space-y-1.5 w-32">
+                                                    <div class="flex justify-between text-[10px] font-black">
+                                                        <span class="text-indigo-600">${h.score} pts</span>
+                                                        <span class="text-slate-400">ICE</span>
+                                                    </div>
+                                                    <div class="score-bar"><div class="score-fill" style="width: ${h.score}%"></div></div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-6">
+                                                <div class="flex items-center gap-2 text-xs font-bold ${h.score > 80 ? 'text-emerald-600 bg-emerald-50' : 'text-amber-600 bg-amber-50'} px-2 py-1 rounded-lg w-fit">
+                                                    <i data-lucide="${h.score > 80 ? 'shield-check' : 'alert-circle'}" class="w-3.5 h-3.5"></i>
+                                                    ${h.score > 80 ? 'Verified Rigor' : 'Standard'}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `}
+                </div>
+            `,
+            backoffice: () => `
+                <div class="animate-slide-in space-y-12 max-w-4xl">
+                    <div>
+                        <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Account Settings</h1>
+                        <p class="text-sm text-slate-500">Configure global governance and logic gates</p>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between p-6 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                            <div class="flex gap-6 max-w-lg">
+                                <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0"><i data-lucide="shield-check" class="w-6 h-6"></i></div>
+                                <div class="space-y-1"><h4 class="font-bold text-slate-900 leading-tight">Enforce Hypothesis Gate</h4><p class="text-sm text-slate-500 leading-relaxed">Mandate a scientific hypothesis (Quality Score > 80) before any experiment can be launched.</p></div>
+                            </div>
+                            <div class="w-14 h-8 bg-indigo-600 rounded-full flex items-center px-1 cursor-pointer"><div class="w-6 h-6 bg-white rounded-full translate-x-6 self-center"></div></div>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        function switchView(viewId) {
+            state.activeView = viewId;
+            const container = document.getElementById('view-container');
+            container.innerHTML = VIEWS[viewId]();
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('nav-' + viewId).classList.add('active');
+            document.getElementById('current-view-name').innerText = document.getElementById('nav-' + viewId).innerText.trim();
+            lucide.createIcons();
+            hideTooltip();
+        }
+
+        function switchFinalization(variant) {
+            state.finalizationVariant = variant;
+            switchView('finalization');
+        }
+
+        function switchHypothesisSubView(subView) {
+            state.hypothesisSubView = subView;
+            switchView('hypothesis');
+        }
+
+        function toggleAdmin() {
+            state.isAdmin = !state.isAdmin;
+            switchView('hypothesis');
+        }
+
+        function handleSlash(e) {
+            const menu = document.getElementById('slash-menu');
+            if (e.target.value.endsWith('/')) { menu.style.display = 'block'; }
+            else { menu.style.display = 'none'; }
+        }
+
+        const tt = document.getElementById('global-tooltip');
+        function showTooltip(e, name, hyp) {
+            document.getElementById('tt-name').innerText = name;
+            document.getElementById('tt-hypothesis').innerText = '"' + hyp + '"';
+            tt.style.display = 'block';
+            tt.style.left = (e.clientX + 20) + 'px';
+            tt.style.top = (e.clientY + 20) + 'px';
+            lucide.createIcons();
+        }
+
+        function hideTooltip() { tt.style.display = 'none'; }
+
+        window.onload = () => { switchView('dashboard'); lucide.createIcons(); };
+    </script>
+</body>
+
+</html>

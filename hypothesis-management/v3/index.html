@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kameleoon | Hypothesis Management OS (v3)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .active-tab {
+            background: rgba(79, 70, 229, 0.1);
+            color: #818cf8;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
+        }
+
+        .inactive-tab {
+            color: #64748b;
+        }
+
+        .inactive-tab:hover {
+            color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .tooltip {
+            position: fixed;
+            z-index: 1000;
+            width: 380px;
+            background: white;
+            color: #0f172a;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="w-64 border-r border-white/10 bg-slate-900/50 flex flex-col shrink-0">
+        <div class="p-8 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+                <i data-lucide="shield-check" class="text-white w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-xl tracking-tight">Kameleoon</span>
+        </div>
+        <nav class="flex-1 px-4 space-y-2">
+            <button onclick="switchView('dashboard')" id="btn-dashboard"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all active-tab">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                <span class="text-xs font-bold uppercase tracking-wider">Experiments</span>
+            </button>
+            <button onclick="switchView('hub')" id="btn-hub"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all inactive-tab">
+                <i data-lucide="kanban" class="w-4 h-4"></i>
+                <span class="text-xs font-bold uppercase tracking-wider">Hypothesis Hub</span>
+            </button>
+            <button onclick="switchView('setup')" id="btn-setup"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all inactive-tab">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <span class="text-xs font-bold uppercase tracking-wider">Setup PICO</span>
+            </button>
+            <button onclick="switchView('admin')" id="btn-admin"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all inactive-tab">
+                <i data-lucide="shield" class="w-4 h-4"></i>
+                <span class="text-xs font-bold uppercase tracking-wider">Governance</span>
+            </button>
+        </nav>
+        <div
+            class="p-8 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-600 font-bold uppercase tracking-widest italic">
+            <span>v3.0-Vanilla</span>
+            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Ready</div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col bg-[#0a0f1e] overflow-hidden">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-10 shrink-0">
+            <div class="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-slate-500">
+                Hypothesis Management <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                <span id="view-title" class="text-slate-300">Dashboard</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-[10px] font-bold">
+                    ES</div>
+            </div>
+        </header>
+
+        <div id="content-area" class="flex-1 overflow-y-auto custom-scrollbar p-10">
+            <!-- Content will be injected here -->
+        </div>
+    </main>
+
+    <!-- Global Tooltip -->
+    <div id="global-tooltip" class="tooltip animate-fade-in">
+        <h3 id="tt-title" class="font-extrabold text-indigo-700 text-lg mb-1">Test PBX 1</h3>
+        <div class="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">
+            <i data-lucide="clock" class="w-3 h-3"></i> Last edited Feb 26, 2026
+        </div>
+        <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-xl mb-4">
+            <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
+                <span class="text-[10px] font-black text-indigo-800 uppercase tracking-wider">Scientific
+                    Hypothesis</span>
+            </div>
+            <p id="tt-hypothesis" class="text-sm font-medium leading-relaxed italic text-indigo-900">"If we target VIP
+                customers..."</p>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-[11px]">
+            <div class="space-y-1"><span class="block font-bold text-slate-400 uppercase">Target Audience</span><span
+                    class="block font-semibold text-slate-800">VIP (Segment A)</span></div>
+            <div class="space-y-1 text-right"><span class="block font-bold text-slate-400 uppercase">Main
+                    Goal</span><span class="block font-semibold text-slate-800">Purchase Rate</span></div>
+        </div>
+    </div>
+
+    <script>
+        const VIEWS = {
+            dashboard: `
+                <div class="space-y-6 animate-fade-in">
+                    <div class="flex justify-between items-end pb-4 border-b border-white/5">
+                        <div>
+                            <h1 class="text-3xl font-black tracking-tight mb-2">A/B Test</h1>
+                            <p class="text-slate-500 text-sm">Main experiment dashboard</p>
+                        </div>
+                        <button class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20 active:scale-95">
+                            <i data-lucide="plus"></i> New Experiment
+                        </button>
+                    </div>
+                    <div class="glass-panel overflow-hidden border border-white/5">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="border-b border-white/5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                                    <th class="px-6 py-4">Name</th>
+                                    <th className="px-6 py-4">Type</th>
+                                    <th className="px-6 py-4">Status</th>
+                                    <th className="px-6 py-4">Edited</th>
+                                    <th className="px-6 py-4 text-right pr-6">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                <tr onmouseenter="showTooltip(event, 'Test PBX 1', 'If we target VIP customers with a specialized checkout flow, then conversion will increase by 5% because of increased exclusivity and reduced friction.')" onmouseleave="hideTooltip()" class="hover:bg-white/5 transition-colors group">
+                                    <td class="px-6 py-5 flex items-center gap-3">
+                                        <div class="w-1 h-3 rounded-full bg-indigo-500"></div>
+                                        <span class="font-semibold text-slate-200 group-hover:text-indigo-400 transition-colors uppercase tracking-tight">Test PBX 1</span>
+                                        <i data-lucide="info" class="w-4 h-4 text-indigo-500/50 hover:text-indigo-400 cursor-help"></i>
+                                    </td>
+                                    <td class="px-6 py-5 text-slate-400">Prompt-based</td>
+                                    <td class="px-6 py-5"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-indigo-500"></div><span class="text-xs font-medium">Draft</span></div></td>
+                                    <td class="px-6 py-5 text-slate-400">26/02/2026</td>
+                                    <td class="px-6 py-5 text-right pr-6"><i data-lucide="more-vertical" class="w-4 h-4 text-slate-500"></i></td>
+                                </tr>
+                                <tr onmouseenter="showTooltip(event, 'Homepage Redesign', 'If we simplify the hero section, then bounce rate will decrease because cognitive load is reduced.')" onmouseleave="hideTooltip()" class="hover:bg-white/5 transition-colors group">
+                                    <td class="px-6 py-5 flex items-center gap-3">
+                                        <div class="w-1 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                                        <span class="font-semibold text-slate-200 group-hover:text-indigo-400 transition-colors uppercase tracking-tight">Homepage Redesign</span>
+                                        <i data-lucide="info" class="w-4 h-4 text-indigo-500/50 hover:text-indigo-400 cursor-help"></i>
+                                    </td>
+                                    <td class="px-6 py-5 text-slate-400">Graphic MVT</td>
+                                    <td class="px-6 py-5"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-emerald-500"></div><span class="text-xs font-medium">Online</span></div></td>
+                                    <td class="px-6 py-5 text-slate-400">30/05/2024</td>
+                                    <td class="px-6 py-5 text-right pr-6"><i data-lucide="more-vertical" class="w-4 h-4 text-slate-500"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `,
+            hub: `
+                <div class="space-y-8 animate-fade-in">
+                    <div class="flex justify-between items-end">
+                        <div><h1 class="text-3xl font-black tracking-tight mb-2">Hypothesis Hub</h1><p class="text-slate-500 text-sm">Roadmap & institutional memory</p></div>
+                    </div>
+                    <div class="flex gap-6 overflow-x-auto pb-4 custom-scrollbar">
+                        ${['Backlog', 'Ready', 'Testing', 'Completed'].map(col => `
+                            <div class="w-80 shrink-0 space-y-4">
+                                <div class="flex items-center justify-between px-2">
+                                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">${col}</span>
+                                    <i data-lucide="more-vertical" class="w-4 h-4 text-slate-700"></i>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="glass-panel p-5 space-y-4 hover:border-indigo-500/30 transition-all cursor-grab">
+                                        <h4 class="font-bold text-slate-200 leading-tight">${col === 'Backlog' ? 'VIP Specialized Checkout' : 'Performance Upgrade'}</h4>
+                                        <div class="flex justify-between items-center">
+                                            <div class="text-[10px] font-black text-slate-500 uppercase">${Math.floor(Math.random() * 20 + 75)}% Rigor</div>
+                                            <div class="flex items-center gap-1 text-[9px] font-black text-amber-500 uppercase tracking-widest">
+                                                <i data-lucide="sparkles" class="w-3 h-3"></i> Ideate
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="w-full py-3 border border-dashed border-white/5 rounded-xl text-slate-700 hover:text-slate-500 transition-all text-xs font-bold uppercase tracking-widest">+ New Idea</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `,
+            setup: `
+                <div class="max-w-4xl mx-auto space-y-8 animate-fade-in">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-600/10 flex items-center justify-center border border-indigo-500/20"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-400"></i></div>
+                        <div><h2 class="text-2xl font-black tracking-tight">Setup PICO</h2><p class="text-slate-500 text-sm">Scientific Framework Configuration</p></div>
+                    </div>
+                    <div class="glass-panel p-8 space-y-6 border border-white/5">
+                        <div class="grid gap-4">
+                            ${['Population', 'Intervention', 'Comparison', 'Outcome'].map(tag => `
+                                <div class="glass-panel p-4 flex gap-4 items-center bg-slate-900/50 border border-white/5 hover:border-indigo-500/30 transition-all">
+                                    <div class="w-10 h-10 rounded-lg bg-slate-950 flex items-center justify-center font-black text-indigo-500 border border-white/5">${tag[0]}</div>
+                                    <div class="flex-1">
+                                        <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">${tag}</span>
+                                        <input type="text" placeholder="Type / to search goals..." class="bg-transparent border-none text-slate-300 font-medium focus:outline-none w-full" />
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center py-4">
+                        <button class="bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 px-6 py-3 rounded-xl font-semibold transition-all">Save Draft</button>
+                        <button class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-3 shadow-lg shadow-indigo-500/40 active:scale-95 h-14">Continue <i data-lucide="chevron-right"></i></button>
+                    </div>
+                </div>
+            `,
+            admin: `
+                <div class="max-w-4xl mx-auto space-y-12 animate-fade-in">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20"><i data-lucide="shield" class="w-6 h-6 text-amber-500"></i></div>
+                        <div><h2 class="text-2xl font-black tracking-tight">Governance</h2><p class="text-slate-500 text-sm">Account-wide policy enforcement</p></div>
+                    </div>
+                    <div class="glass-panel p-8 border border-white/5 space-y-8">
+                        <div class="flex justify-between items-center">
+                            <div class="space-y-1">
+                                <h4 class="font-bold text-slate-200">Enforce Hypothesis Gate</h4>
+                                <p class="text-sm text-slate-500">Require scientific formulation for all new experiments.</p>
+                            </div>
+                            <div class="w-14 h-7 bg-indigo-600 rounded-full p-1"><div class="w-5 h-5 bg-white rounded-full translate-x-7 transition-all"></div></div>
+                        </div>
+                        <div class="pt-8 border-t border-white/5 space-y-4">
+                            <h4 class="font-bold text-slate-200 uppercase tracking-widest text-[10px] text-slate-500">KAI Master Prompt</h4>
+                            <div class="bg-slate-950/50 p-4 rounded-xl border border-white/10 font-mono text-[10px] text-indigo-300/60 leading-relaxed italic">
+                                "As a Scientific Advisor for Kameleoon, prioritize the PICO framework. Ensure all user interventions have a clear behavioral 'Because' statement..."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        function switchView(viewId) {
+            document.getElementById('content-area').innerHTML = VIEWS[viewId];
+            document.getElementById('view-title').innerText = viewId.charAt(0).toUpperCase() + viewId.slice(1);
+
+            // Update sidebar buttons
+            document.querySelectorAll('aside nav button').forEach(btn => {
+                btn.classList.remove('active-tab');
+                btn.classList.add('inactive-tab');
+            });
+            document.getElementById('btn-' + viewId).classList.add('active-tab');
+            document.getElementById('btn-' + viewId).classList.remove('inactive-tab');
+
+            lucide.createIcons();
+        }
+
+        const tooltip = document.getElementById('global-tooltip');
+        function showTooltip(e, title, hyp) {
+            document.getElementById('tt-title').innerText = title;
+            document.getElementById('tt-hypothesis').innerText = '"' + hyp + '"';
+            tooltip.style.display = 'block';
+            tooltip.style.left = (e.clientX + 20) + 'px';
+            tooltip.style.top = (e.clientY + 20) + 'px';
+            lucide.createIcons();
+        }
+
+        function hideTooltip() {
+            tooltip.style.display = 'none';
+        }
+
+        // Initialize
+        window.onload = () => {
+            switchView('dashboard');
+        };
+    </script>
+</body>
+
+</html>

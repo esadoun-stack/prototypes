@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kameleoon | Hypothesis Management OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            overflow: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
+        .pulse-emerald {
+            position: relative;
+            display: flex;
+            height: 8px;
+            width: 8px;
+        }
+
+        .pulse-emerald span:first-child {
+            position: absolute;
+            display: inline-flex;
+            height: 100%;
+            width: 100%;
+            border-radius: 9999px;
+            background-color: #34d399;
+            opacity: 0.75;
+            animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        .pulse-emerald span:last-child {
+            position: relative;
+            display: inline-flex;
+            border-radius: 9999px;
+            height: 8px;
+            width: 8px;
+            background-color: #10b981;
+        }
+
+        @keyframes ping {
+
+            75%,
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- UI Components ---
+        const Icon = ({ name, className = "w-5 h-5" }) => {
+            useEffect(() => { lucide.createIcons(); }, []);
+            return <i data-lucide={name} className={className}></i>;
+        };
+
+        const Button = ({ children, variant = "primary", className = "", ...props }) => {
+            const base = "px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 active:scale-95";
+            const variants = {
+                primary: "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20",
+                secondary: "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10",
+                ghost: "text-slate-500 hover:text-slate-300 hover:bg-white/5"
+            };
+            return <button className={`${base} ${variants[variant]} ${className}`} {...props}>{children}</button>;
+        };
+
+        // --- Components ---
+        const ExperimentDashboard = () => {
+            const [hoveredId, setHoveredId] = useState(null);
+            const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+            const experiments = [
+                { id: 1, name: 'Test PBX 1', type: 'Prompt-based', status: 'Draft', date: '26/02/2026', hypothesis: 'If we target VIP customers with a specialized checkout flow, then conversion will increase by 5% because of increased exclusivity and reduced friction.' },
+                { id: 2, name: 'Homepage Redesign', type: 'Graphic MVT', status: 'Online', date: '30/05/2024', hypothesis: 'If we simplify the hero section, then bounce rate will decrease by 10% because cognitive load is reduced for first-time visitors.' },
+                { id: 3, name: 'CTA Button Color', type: 'Code-based A/B', status: 'Draft', date: '30/05/2024', hypothesis: 'If we change the CTA to high-contrast emerald, then click-through rate will increase because of improved visual hierarchy.' },
+            ];
+
+            return (
+                <div className="space-y-6" onMouseMove={(e) => setMousePos({ x: e.clientX, y: e.clientY })}>
+                    <div className="flex justify-between items-end pb-4 border-b border-white/5">
+                        <div>
+                            <h1 className="text-3xl font-black tracking-tight mb-2">A/B Test</h1>
+                            <p className="text-slate-500 text-sm">My "Standard dashboard" view</p>
+                        </div>
+                        <Button className="px-6 py-3"><Icon name="plus" /> New Experiment</Button>
+                    </div>
+
+                    <div className="glass-panel overflow-hidden border border-white/5">
+                        <table className="w-full text-left text-sm">
+                            <thead>
+                                <tr className="border-b border-white/5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                                    <th className="px-6 py-4">Name</th>
+                                    <th className="px-6 py-4">Type</th>
+                                    <th className="px-6 py-4">Status</th>
+                                    <th className="px-6 py-4">Edited</th>
+                                    <th className="px-6 py-4 text-right pr-6 text-slate-400">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {experiments.map((exp) => (
+                                    <tr key={exp.id} className="hover:bg-white/5 transition-colors group relative" onMouseEnter={() => setHoveredId(exp.id)} onMouseLeave={() => setHoveredId(null)}>
+                                        <td className="px-6 py-5 flex items-center gap-3">
+                                            <div className={`w-1 h-3 rounded-full ${exp.status === 'Online' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-indigo-500'}`} />
+                                            <span className="font-semibold text-slate-200 group-hover:text-indigo-400 transition-colors uppercase tracking-tight">{exp.name}</span>
+                                            <Icon name="info" className="w-4 h-4 text-indigo-500/50 hover:text-indigo-400 cursor-help" />
+                                        </td>
+                                        <td className="px-6 py-5 text-slate-400">{exp.type}</td>
+                                        <td className="px-6 py-5">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-2 h-2 rounded-full ${exp.status === 'Online' ? 'bg-emerald-500' : 'bg-slate-600'}`} />
+                                                <span className="text-xs font-medium">{exp.status}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5 text-slate-400">{exp.date}</td>
+                                        <td className="px-6 py-5 text-right pr-6">
+                                            <Icon name="more-vertical" className="w-4 h-4 text-slate-500 inline-block" />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Tooltip */}
+                    {hoveredId && (
+                        <div style={{ position: 'fixed', left: mousePos.x + 20, top: mousePos.y + 20, zIndex: 100 }} className="w-[380px] bg-white text-slate-900 rounded-2xl shadow-2xl p-6 border border-slate-200 animate-fade-in pointer-events-none">
+                            <h3 className="font-extrabold text-indigo-700 text-lg mb-1">{experiments.find(e => e.id === hoveredId).name}</h3>
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">
+                                <Icon name="clock" className="w-3 h-3" /> Last edited Feb 26, 2026
+                            </div>
+                            <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-xl mb-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Icon name="sparkles" className="w-4 h-4 text-indigo-600" />
+                                    <span className="text-[10px] font-black text-indigo-800 uppercase tracking-wider">Scientific Hypothesis</span>
+                                </div>
+                                <p className="text-sm font-medium leading-relaxed italic text-indigo-900">"{experiments.find(e => e.id === hoveredId).hypothesis}"</p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 text-[11px]">
+                                <div className="space-y-1"><span className="block font-bold text-slate-400 uppercase">Target Audience</span><span className="block font-semibold text-slate-800">VIP (Segment A)</span></div>
+                                <div className="space-y-1 text-right"><span className="block font-bold text-slate-400 uppercase">Main Goal</span><span className="block font-semibold text-slate-800">Purchase Rate</span></div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const FinalizationFlow = ({ variant }) => {
+            const [hypothesis, setHypothesis] = useState('');
+            const [score, setScore] = useState(65);
+            const [kaiOpen, setKaiOpen] = useState(false);
+
+            return (
+                <div className="max-w-4xl mx-auto space-y-8 animate-fade-in pb-10">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-600/10 flex items-center justify-center border border-indigo-500/20"><Icon name="sparkles" className="w-6 h-6 text-indigo-400" /></div>
+                        <div><h2 className="text-2xl font-black tracking-tight">Main Information</h2><p className="text-slate-500 text-sm">Configure your experiment's scientific foundation</p></div>
+                    </div>
+
+                    <div className="glass-panel p-8 space-y-6 relative border border-white/5">
+                        <div className="flex justify-between items-center mb-4">
+                            <span className="font-bold text-slate-200">Scientific Hypothesis</span>
+                            <div className="flex items-center gap-4">
+                                <div className="text-right overflow-hidden">
+                                    <span className="block text-[10px] font-black text-slate-500 uppercase tracking-widest">Quality Score</span>
+                                    <span className="text-xl font-black text-indigo-400">{score}/100</span>
+                                </div>
+                                <div className="w-12 h-12 rounded-full border-2 border-slate-800 flex items-center justify-center">
+                                    <div className="w-10 h-10 rounded-full border-t-2 border-indigo-500 animate-spin"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {variant === 'standard' ? (
+                            <div className="relative">
+                                <textarea value={hypothesis} onChange={(e) => setHypothesis(e.target.value)} placeholder="If we [change], then [outcome] because [reasoning]..." className="w-full h-40 bg-slate-950/50 border border-white/10 rounded-2xl p-6 text-slate-300 focus:outline-none focus:border-indigo-500/50 text-lg italic resize-none" />
+                                <button onClick={() => setKaiOpen(!kaiOpen)} className={`absolute bottom-6 right-6 flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${kaiOpen ? 'bg-indigo-600 border-indigo-400' : 'bg-white/5 border-white/10 text-indigo-400'}`}><Icon name="sparkles" /> <span className="text-xs font-bold uppercase">KAI Advisor</span></button>
+                            </div>
+                        ) : (
+                            <div className="grid gap-4">
+                                {['Population', 'Intervention', 'Comparison', 'Outcome'].map(tag => (
+                                    <div key={tag} className="glass-panel p-4 flex gap-4 items-center bg-slate-900/50 border border-white/5 hover:border-indigo-500/30 transition-all">
+                                        <div className="w-10 h-10 rounded-lg bg-slate-950 flex items-center justify-center font-black text-indigo-500 border border-white/5">{tag[0]}</div>
+                                        <div className="flex-1">
+                                            <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">{tag}</span>
+                                            <input type="text" placeholder={`Define the ${tag.toLowerCase()}...`} className="bg-transparent border-none text-slate-300 font-medium focus:outline-none w-full" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {kaiOpen && (
+                            <div className="mt-6 border-t border-white/10 pt-6 animate-slide-up">
+                                <div className="bg-indigo-600/10 border border-indigo-500/20 p-4 rounded-xl flex gap-4">
+                                    <Icon name="info" className="text-indigo-400 shrink-0" />
+                                    <p className="text-xs text-indigo-200/70 leading-relaxed italic">"KAI Suggestion: Consider adding a psychological 'Because' trigger. For example, 'because social proof reduces fit anxiety for first-time buyers'."</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex justify-between items-center py-4">
+                        <Button variant="secondary">Save Draft</Button>
+                        <Button className="h-14 px-8">Continue <Icon name="chevron-right" /></Button>
+                    </div>
+                </div>
+            );
+        };
+
+        const HypothesisHub = () => {
+            const items = [
+                { id: 1, title: 'VIP Specialized Checkout', status: 'Backlog', score: 85, source: 'PBX Ideate' },
+                { id: 2, title: 'Hero Clarity v2', status: 'Testing', score: 92, source: 'Manual' },
+                { id: 3, title: 'Social Proof Trust Bar', status: 'Ready', score: 78, source: 'PBX Ideate' },
+            ];
+
+            return (
+                <div className="space-y-8 animate-fade-in">
+                    <div className="flex justify-between items-end">
+                        <div><h1 className="text-3xl font-black tracking-tight mb-2">Hypothesis Hub</h1><p className="text-slate-500 text-sm">Institutional memory for experimentation intent</p></div>
+                        <div className="flex gap-2 bg-slate-900/50 p-1 rounded-xl border border-white/5">
+                            <Button variant="primary" className="py-1.5 px-3 text-xs"><Icon name="kanban" className="w-4 h-4" /> Kanban</Button>
+                            <Button variant="ghost" className="py-1.5 px-3 text-xs"><Icon name="list" className="w-4 h-4" /> List</Button>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-6 overflow-x-auto pb-4 custom-scrollbar">
+                        {['Backlog', 'Ready', 'Testing', 'Completed'].map(col => (
+                            <div key={col} className="w-80 shrink-0 space-y-4">
+                                <div className="flex items-center justify-between px-2">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{col}</span>
+                                    <Icon name="more-vertical" className="w-4 h-4 text-slate-700" />
+                                </div>
+                                <div className="space-y-4">
+                                    {items.filter(i => i.status === col || (col === 'Backlog' && i.status === 'Backlog')).map(item => (
+                                        <div key={item.id} className="glass-panel p-5 space-y-4 hover:border-indigo-500/30 transition-all cursor-grab active:cursor-grabbing">
+                                            <h4 className="font-bold text-slate-200 leading-tight">{item.title}</h4>
+                                            <div className="flex justify-between items-center">
+                                                <div className="text-[10px] font-black text-slate-500 uppercase">{item.score}% Rigor</div>
+                                                {item.source === 'PBX Ideate' && (
+                                                    <div className="flex items-center gap-1 text-[9px] font-black text-amber-500 uppercase tracking-widest animate-pulse">
+                                                        <Icon name="sparkles" className="w-3 h-3" /> Ideate
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <button className="w-full py-3 border border-dashed border-white/5 rounded-xl text-slate-700 hover:text-slate-500 transition-all text-xs font-bold uppercase tracking-widest">+ New Idea</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const AdminSettings = () => {
+            return (
+                <div className="max-w-4xl mx-auto space-y-12 animate-fade-in">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20"><Icon name="shield" className="w-6 h-6 text-amber-500" /></div>
+                        <div><h2 className="text-2xl font-black tracking-tight">Governance</h2><p className="text-slate-500 text-sm">Account-wide policy enforcement</p></div>
+                    </div>
+
+                    <div className="glass-panel p-8 border border-white/5 space-y-8">
+                        <div className="flex justify-between items-center">
+                            <div className="space-y-1">
+                                <h4 className="font-bold text-slate-200">Enforce Hypothesis Gate</h4>
+                                <p className="text-sm text-slate-500">Require scientific formulation for all new experiments.</p>
+                            </div>
+                            <div className="w-14 h-7 bg-indigo-600 rounded-full p-1"><div className="w-5 h-5 bg-white rounded-full translate-x-7 transition-all"></div></div>
+                        </div>
+
+                        <div className="pt-8 border-t border-white/5 space-y-4">
+                            <div className="flex justify-between items-center">
+                                <h4 className="font-bold text-slate-200">KAI Master Prompt</h4>
+                                <span className="text-[10px] font-black text-amber-500 border border-amber-500/20 px-2 py-0.5 rounded">Admin Only</span>
+                            </div>
+                            <textarea defaultValue={`As a Kameleoon Scientific Advisor, guide the user to follow PICO...`} className="w-full h-32 bg-slate-950/50 border border-white/10 rounded-xl p-4 text-xs font-mono text-indigo-300 resize-none opacity-50" readOnly />
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [view, setView] = useState('dashboard');
+
+            return (
+                <div className="flex h-screen w-full">
+                    {/* Sidebar */}
+                    <aside className="w-64 border-r border-white/10 bg-slate-900/50 flex flex-col shrink-0">
+                        <div className="p-8 flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center"><Icon name="shield-check" className="text-white w-5 h-5" /></div><span className="font-bold text-xl tracking-tight">Kameleoon</span></div>
+                        <nav className="flex-1 px-4 space-y-1">
+                            {[
+                                { id: 'dashboard', label: 'Experiments', icon: 'layout-dashboard' },
+                                { id: 'management', label: 'Hypothesis Hub', icon: 'kanban' },
+                                { id: 'setup-a', label: 'Setup (Single)', icon: 'plus-circle' },
+                                { id: 'setup-b', label: 'Setup (PICO)', icon: 'file-text' },
+                                { id: 'admin', label: 'Governance', icon: 'shield' },
+                            ].map(item => (
+                                <button key={item.id} onClick={() => setView(item.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${view === item.id ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.1)]' : 'text-slate-500 hover:text-slate-300'}`}>
+                                    <Icon name={item.icon} className="w-4 h-4" /> <span className="text-xs font-bold uppercase tracking-wider">{item.label}</span>
+                                </button>
+                            ))}
+                        </nav>
+                        <div className="p-8 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-600 font-bold uppercase tracking-widest italic"><span>v2.0-Standalone</span><div className="pulse-emerald"><span></span><span></span></div></div>
+                    </aside>
+
+                    {/* Main */}
+                    <main className="flex-1 flex flex-col overflow-hidden bg-[#0a0f1e]">
+                        <header className="h-20 border-b border-white/5 flex items-center justify-between px-10 shrink-0">
+                            <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-slate-500">Hypothesis Management <Icon name="chevron-right" className="w-3 h-3" /> <span className="text-slate-300">{view.replace('-', ' ')}</span></div>
+                            <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-[10px] font-bold">ES</div></div>
+                        </header>
+
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-10">
+                            {view === 'dashboard' && <ExperimentDashboard />}
+                            {view === 'setup-a' && <FinalizationFlow variant="standard" />}
+                            {view === 'setup-b' && <FinalizationFlow variant="pico" />}
+                            {view === 'management' && <HypothesisHub />}
+                            {view === 'admin' && <AdminSettings />}
+                        </div>
+                    </main>
+                </div>
+            )
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
